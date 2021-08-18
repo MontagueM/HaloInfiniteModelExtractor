@@ -214,7 +214,7 @@ def all_from_directory():
 
 if __name__ == "__main__":
     # if the code isnt working try replacing all the backslashes with forward slashes in every directory
-    unpack_directory = "H:/HaloInfiniteUnpack"
+    unpack_directory = "H:/HIU"
     directory = f"{unpack_directory}/__chore/ds__/objects/vehicles/covenant/banshee/bitmaps/"
     directory = directory.replace("\\", "/")
     out_path = "Z:/HI/textures/"
