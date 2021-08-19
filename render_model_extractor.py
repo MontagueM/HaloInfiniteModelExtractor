@@ -12,7 +12,8 @@ import scipy.spatial
 # folder_path = "H:/HIU/__chore/gen__/objects/weapons/pistol/needler/"
 # folder_path = "H:\HIU\__chore\gen__\objects\weapons\melee\energy_sword/"
 # folder_path = "H:/HIU/__chore/gen__/objects/weapons/pistol/sidearm_pistol/"
-folder_path = "H:/HIU/objects/characters/spartan_armor/"
+# folder_path = "H:/HIU/objects/characters/spartan_armor/"
+folder_path= "H:\HaloInfiniteUnpack\__chore\gen__\objects\props\dead_bodies/brute_body_v3/"
 
 folder_path = folder_path.replace("\\", "/")
 file = ""
@@ -245,7 +246,7 @@ for e in entries:
 
 # combining all the chunks together into one big one
 chunk_data_map = {}
-for i, chunk in enumerate([x for x in os.listdir(folder_path) if ".chunk" in x]):  # praying they read in order - TODO check this with a large file >10 or >100 chunks
+for i, chunk in enumerate([x for x in os.listdir(folder_path) if ".chunk" in x and ".render_model" in x]):  # praying they read in order - TODO check this with a large file >10 or >100 chunks
     cdata = open(f"{folder_path}/{chunk}", "rb").read()
     index = int(chunk[:-1].split(".chunk")[-1])
     chunk_data_map[index] = cdata
