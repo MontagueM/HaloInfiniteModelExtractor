@@ -8,17 +8,20 @@ import pyfbx
 import copy
 import scipy.spatial
 
-
+base = "G:/HaloInfiniteUnpack/"
 # folder_path = "H:/HIU/__chore/gen__/objects/weapons/pistol/needler/"
 # folder_path = "H:\HIU\__chore\gen__\objects\weapons\melee\energy_sword/"
 # folder_path = "H:/HIU/__chore/gen__/objects/weapons/pistol/sidearm_pistol/"
 # folder_path = "H:/HIU/objects/characters/spartan_armor/"
-folder_path= "H:\HaloInfiniteUnpack\__chore\gen__\objects\props\dead_bodies/brute_body_v3/"
-
+# folder_path= "__chore\gen__\objects\characters\spartan_armor\gear\generic\gear_003_candy_cane_shiv/"
+# folder_path= "G:\HaloInfiniteUnpack\__chore\gen__\objects/vehicles\covenant/banshee/"
+folder_path = base + "objects\characters\spartan_armor"
+folder_path = base + "objects/props/human/unsc/ai_chip"
+folder_path = "C:/Users/monta/OneDrive/ReverseEngineering/Halo/CortanaFiles"
 folder_path = folder_path.replace("\\", "/")
 file = ""
 for f in os.listdir(folder_path):
-    if f[-30:] == ".render_model[0_mesh_resource]":
+    if f.endswith(".render_model"):
         file = folder_path + "/" + f
         break
 if not file:
@@ -45,15 +48,16 @@ if data_offset == -1:
     raise Exception("Could not find data offset")
 data_offset -= 0x10
 
-table_offset = 0x50 + gf.get_uint32(fb, 0x1C)*0x10 + gf.get_uint32(fb, 0x20)*0x20
+table_offset = 0x50 + gf.get_uint32(fb, 0x18)*0x18 + gf.get_uint32(fb, 0x1C)*0x10 + gf.get_uint32(fb, 0x20)*0x20
 table_count = gf.get_uint32(fb, 0x24)
 potential_delta = data_offset - table_offset - table_count*0x14
 
 model = pyfbx.Model()
 
 ## Getting automatic scale data and parts data
-rmfile = file.replace("[0_mesh_resource]", "")
-rmfb = open(rmfile, "rb").read()
+# rmfile = file.replace("[0_mesh_resource]", "")
+# rmfb = open(rmfile, "rb").read()
+rmfb = fb
 rmfb_data_offset = gf.get_uint32(rmfb, 0x38)
 # Finding render_model data
 t1_offset = 0x50 + gf.get_uint32(rmfb, 0x18) * 0x18
@@ -111,7 +115,7 @@ if not part_offsets:
 
 # Strings
 strings = {}
-string_table_offset = t2_offset+t2_count*0x20
+string_table_offset = table_offset+0x14*table_count
 string_table_count = gf.get_uint32(rmfb, 0x28)
 strings_offset = string_table_offset+string_table_count*0x10
 for i in range(string_table_offset, string_table_offset+string_table_count*0x10, 0x10):
@@ -210,9 +214,11 @@ class Block:
 index_blocks = []
 vertex_blocks = []
 cur_off = entries[0].offset
+vertex_type = entries[0].type
+index_type = vertex_type + 1
 for e in entries:
     b = Block()
-    if e.type == 1:
+    if e.type == vertex_type:
         b.unk0x00 = gf.get_uint32(fb, cur_off)
         b.unk0x04 = gf.get_uint32(fb, cur_off+4)
         b.unk0x08 = gf.get_uint32(fb, cur_off+8)
@@ -227,7 +233,7 @@ for e in entries:
         unk0x28 = gf.get_uint32(fb, cur_off + 0x28)
         vertex_blocks.append(b)
         cur_off += 0x50
-    elif e.type == 2:
+    elif e.type == index_type:
         b.unk0x00 = gf.get_uint32(fb, cur_off)
         b.unk0x04 = gf.get_uint32(fb, cur_off+4)
         b.unk0x08 = gf.get_uint32(fb, cur_off+8)
@@ -491,7 +497,7 @@ for i, mesh in enumerate(meshes):
 
 
 # model.export(f"Z:/RE_OtherGames/HI/models/{item_name}/{item_name}.fbx")
-model.export(f"Z:/RE_OtherGames/HI/models/{item_name}.fbx")
+model.export(f"C:/Users/monta/OneDrive/ReverseEngineering/Halo/Extract/models/{item_name}.fbx")
 
 a = 0
 
