@@ -9,15 +9,11 @@ import copy
 import scipy.spatial
 
 base = "G:/HaloInfiniteUnpack/"
-# folder_path = "H:/HIU/__chore/gen__/objects/weapons/pistol/needler/"
-# folder_path = "H:\HIU\__chore\gen__\objects\weapons\melee\energy_sword/"
-# folder_path = "H:/HIU/__chore/gen__/objects/weapons/pistol/sidearm_pistol/"
-# folder_path = "H:/HIU/objects/characters/spartan_armor/"
-# folder_path= "__chore\gen__\objects\characters\spartan_armor\gear\generic\gear_003_candy_cane_shiv/"
-# folder_path= "G:\HaloInfiniteUnpack\__chore\gen__\objects/vehicles\covenant/banshee/"
+
 folder_path = base + "objects\characters\spartan_armor"
 folder_path = base + "objects/props/human/unsc/ai_chip"
-folder_path = "C:/Users/monta/OneDrive/ReverseEngineering/Halo/CortanaFiles"
+folder_path = base + "objects/weapons/pistol/magnum/"
+
 folder_path = folder_path.replace("\\", "/")
 file = ""
 for f in os.listdir(folder_path):
@@ -124,7 +120,7 @@ for i in range(string_table_offset, string_table_offset+string_table_count*0x10,
     string_offset = gf.get_uint32(rmfb, i+8)
     index = gf.get_int32(rmfb, i+0xC)
     if index == -1:
-        break
+        continue
     strings[index] = gf.offset_to_string_mem(rmfb, strings_offset+string_offset).replace('\\', '/')
 
 # Reading scale data
@@ -169,7 +165,10 @@ for p in part_offsets:
         part.index_offset = gf.get_uint32(rmfb, o+0x4)
         part.index_count = gf.get_uint32(rmfb, o+0x8)
         part.vertex_count = gf.get_uint16(rmfb, o+0x14)
-        part.mat_string = strings[part.mat_index]
+        if part.mat_index not in strings.keys():
+            part.mat_string = ""
+        else:
+            part.mat_string = strings[part.mat_index]
         parts[-1].append(part)
         a = 0
 
@@ -497,9 +496,6 @@ for i, mesh in enumerate(meshes):
 
 
 # model.export(f"Z:/RE_OtherGames/HI/models/{item_name}/{item_name}.fbx")
-model.export(f"C:/Users/monta/OneDrive/ReverseEngineering/Halo/Extract/models/{item_name}.fbx")
-
-a = 0
-
-# with open(f"Z:/RE_OtherGames/HI/models/{item_name}/{item_name}.txt", "w") as f:
-#     fo
+save_path = f"C:/Users/monta/OneDrive/ReverseEngineering/Halo/Extract/models/{item_name}.fbx"
+model.export(save_path)
+print(f"Saved model to {save_path}")
