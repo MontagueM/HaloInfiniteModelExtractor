@@ -102,9 +102,12 @@ class Texture:
 def convert_bitmap(bitmap_handle, q):
     tex = Texture()
     fb = open(bitmap_handle, "rb").read()
+    if len(fb) < 0x310:
+        print("Texture has no data")
+        return
     tex.width = gf.get_uint16(fb, len(fb)-4)
     tex.height = gf.get_uint16(fb, len(fb)-2)
-    tex.texture_format = fb[0xF1]
+    tex.texture_format = fb[0x309]
     # tex.texture_format = 0x48
     if "{pc}" not in bitmap_handle:
         raise Exception("Need to be pc")
@@ -124,7 +127,7 @@ def convert_bitmap(bitmap_handle, q):
     #     tex.texture_format = 0x54
     # if "control" in bitmap_handle and "asg" not in bitmap_handle and "mask" not in bitmap_handle:
     #     tex.texture_format = 0x61
-    write_texture(tex, f"{save_direc}/monteven_{q}.dds")
+    write_texture(tex, f"{save_direc}/{q}.dds")
 
 
 def write_texture(tex, full_save_path):
@@ -197,7 +200,7 @@ def write_file(header, tex, full_save_path):
 
 
 def all_from_folder():
-    extract = [x for x in os.listdir(folder) if ".bitmap[0_bitmap_resource_handle]" == x[-33:]]
+    extract = [x for x in os.listdir(folder) if x.endswith(".bitmap")]
     print(extract)
     for x in extract:
         convert_bitmap(folder + x, x)
@@ -205,7 +208,7 @@ def all_from_folder():
 
 def all_from_directory():
     global folder
-    p = [os.path.join(dp, f)[len(directory):].replace("\\", "/") for dp, dn, fn in os.walk(os.path.expanduser(directory)) for f in fn if ".bitmap[0_bitmap_resource_handle]" in f and ".chunk" not in f and ".dds" not in f ]
+    p = [os.path.join(dp, f)[len(directory):].replace("\\", "/") for dp, dn, fn in os.walk(os.path.expanduser(directory)) for f in fn if f.endswith(".bitmap") and ".chunk" not in f and ".dds" not in f ]
     for path in p:
         x = path.split('/')[-1]
         folder = directory + path.replace(x, "")
@@ -214,8 +217,8 @@ def all_from_directory():
 
 if __name__ == "__main__":
     # if the code isnt working try replacing all the backslashes with forward slashes in every directory
-    unpack_directory = "H:/HIU"
-    directory = f"{unpack_directory}/__chore/ds__/objects/vehicles/covenant/banshee/bitmaps/"
+    unpack_directory = "G:/HaloInfiniteUnpack"
+    directory = f"{unpack_directory}/__chore\pc__\objects\weapons/"
     directory = directory.replace("\\", "/")
-    out_path = "Z:/HI/textures/"
+    out_path = "C:/Users/monta\OneDrive\ReverseEngineering\Halo\Extract/textures/"
     all_from_directory()
