@@ -1,5 +1,6 @@
 import os
-import numpy as np
+# import numpy as np
+import math
 import struct
 
 
@@ -24,9 +25,9 @@ def get_file_from_hash(hsh):
     hsh = get_flipped_hex(hsh, 8)
     first_int = int(hsh, 16)
     one = first_int - 2155872256
-    first_hex = hex(int(np.floor(one/8192)))
+    first_hex = hex(int(math.floor(one/8192)))
     second_hex = hex(first_int % 8192)
-    return f'{fill_hex_with_zeros(first_hex[2:], 4)}-{fill_hex_with_zeros(second_hex[2:], 4)}'.upper()
+    return '{}-{}'.format(fill_hex_with_zeros(first_hex[2:], 4), fill_hex_with_zeros(second_hex[2:], 4)).upper()
 
 
 def get_hash_from_file(file):

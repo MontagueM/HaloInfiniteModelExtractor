@@ -6,15 +6,24 @@ import gf
 import os
 import pyfbx
 import copy
-import scipy.spatial
+# import scipy.spatial
+import tkinter
+from tkinter import filedialog
+from os import path
+root = tkinter.Tk()
+root.withdraw()
 
-base = "G:/HaloInfiniteUnpack/"
 
-folder_path = base + "objects\characters\spartan_armor"
-folder_path = base + "objects/props/human/unsc/ai_chip"
-folder_path = base + "objects/weapons/pistol/magnum/"
 
-folder_path = folder_path.replace("\\", "/")
+# folder_path = base + "objects\characters\spartan_armor"
+# folder_path = base + "objects/props/human/unsc/ai_chip"
+# folder_path = base + "objects/weapons/pistol/magnum/"
+
+file_path = filedialog.askopenfile(initialdir="/", title="Select a .render_model file.", filetypes=[('Halo Infinite Render Model','*.render_model')]).name
+print("Chosen model file is {}".format(file_path))
+folder_path = path.split(file_path)[0]
+filename_stripped = path.split(file_path)[1].replace('.render_model', '')
+print("Folder path is {}".format(folder_path))
 file = ""
 for f in os.listdir(folder_path):
     if f.endswith(".render_model"):
@@ -252,7 +261,7 @@ for e in entries:
 # combining all the chunks together into one big one
 chunk_data_map = {}
 for i, chunk in enumerate([x for x in os.listdir(folder_path) if ".chunk" in x and ".render_model" in x]):  # praying they read in order - TODO check this with a large file >10 or >100 chunks
-    cdata = open(f"{folder_path}/{chunk}", "rb").read()
+    cdata = open("{}/{}".format(folder_path,chunk), "rb").read()
     index = int(chunk[:-1].split(".chunk")[-1])
     chunk_data_map[index] = cdata
 
@@ -458,7 +467,7 @@ for i, mesh in enumerate(meshes):
             continue
     last_face_count = len(mesh.faces)
     last_vert_count = len(mesh.vert_pos)
-    mesh.name = f"{item_name}_{i}_{len(mesh.faces)}_{len(mesh.vert_pos)}"
+    mesh.name = str(item_name) + '_' + str(i) + '_' + str(len(mesh.faces)) + '_' + str(len(mesh.vert_pos))
 
     # Splitting into parts based on materials
     if mesh.parts:
@@ -487,15 +496,17 @@ for i, mesh in enumerate(meshes):
             if mesh.vert_norm:
                 m.vert_norm = trim_verts_data(mesh.vert_norm, dsort)
             if part.mat_string:
-                m.name = part.mat_string.split('/')[-1] + f"_{p}"
+                m.name = part.mat_string.split('/')[-1] + "_{}".format(p)
             else:
-                m.name = mesh.name + f"_{p}"
+                m.name = mesh.name + "_{}".format(p)
             model.add(m)
     else:
         model.add(mesh)
 
 
 # model.export(f"Z:/RE_OtherGames/HI/models/{item_name}/{item_name}.fbx")
-save_path = f"C:/Users/monta/OneDrive/ReverseEngineering/Halo/Extract/models/{item_name}.fbx"
-model.export(save_path)
-print(f"Saved model to {save_path}")
+# save_path = f"C:/Users/monta/OneDrive/ReverseEngineering/Halo/Extract/models/{item_name}.fbx"
+save_path = filedialog.askdirectory(initialdir="/", title="Choose output path")
+
+model.export(os.path.join(save_path,filename_stripped))
+print("Saved model to {}".format(os.path.join(save_path,filename_stripped + '.fbx')))
