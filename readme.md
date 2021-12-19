@@ -2,6 +2,7 @@
 
 
 Requirements: 
+  - an unpacked halo infinite file set (via `https://github.com/MontagueM/HaloInfiniteModuleUnpacker`, check DozzaBB fork for current working version)
   - python base libraries
   - tkinter (should have this on windows already)
   - scipy
