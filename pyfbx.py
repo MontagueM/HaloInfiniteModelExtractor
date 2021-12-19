@@ -95,7 +95,7 @@ class Model:
         layer.SetNormals(normElement)
 
     def create_uv(self, mesh, submesh, layer, uv_name):
-        uvDiffuseLayerElement = fbx.FbxLayerElementUV.Create(mesh, f'{uv_name} {submesh.name}')
+        uvDiffuseLayerElement = fbx.FbxLayerElementUV.Create(mesh, '{} {}'.format(uv_name, submesh.name))
         uvDiffuseLayerElement.SetMappingMode(fbx.FbxLayerElement.eByControlPoint)
         uvDiffuseLayerElement.SetReferenceMode(fbx.FbxLayerElement.eDirect)
         if uv_name == "uv0":
@@ -107,7 +107,7 @@ class Model:
         layer.SetUVs(uvDiffuseLayerElement, fbx.FbxLayerElement.eTextureDiffuse)
 
     def add_vert_colours(self, mesh, submesh, layer):
-        vertColourElement = fbx.FbxLayerElementVertexColor.Create(mesh, f'colour')
+        vertColourElement = fbx.FbxLayerElementVertexColor.Create(mesh, 'colour')
         vertColourElement.SetMappingMode(fbx.FbxLayerElement.eByControlPoint)
         vertColourElement.SetReferenceMode(fbx.FbxLayerElement.eDirect)
         for i, p in enumerate(submesh.vertex_colour):
@@ -116,13 +116,13 @@ class Model:
 
     def apply_diffuse(self, tex_name, tex_path, node):
         """Bad function that shouldn't be used as shaders should be, but meh"""
-        lMaterialName = f'mat {tex_name}'
+        lMaterialName = 'mat {}'.format(tex_name)
         lMaterial = fbx.FbxSurfacePhong.Create(self.scene, lMaterialName)
         lMaterial.DiffuseFactor.Set(1)
         lMaterial.ShadingModel.Set('Phong')
         node.AddMaterial(lMaterial)
 
-        gTexture = fbx.FbxFileTexture.Create(self.scene, f'Diffuse Texture {tex_name}')
+        gTexture = fbx.FbxFileTexture.Create(self.scene, 'Diffuse Texture {}'.format(tex_name))
         lTexPath = tex_path
         gTexture.SetFileName(lTexPath)
         gTexture.SetRelativeFileName(lTexPath)
@@ -168,7 +168,7 @@ class Model:
             for j in range(len(indices)):
                 if len(bone_cluster) < indices[j]:
                     print(
-                        f'Bone index longer than bone clusters, could not add weights ({indices[j]} > {len(bone_cluster)})')
+                        'Bone index longer than bone clusters, could not add weights ({} > {})'.format(indices[j],len(bone_cluster) ))
                     return
                 try:
                     bone_cluster[indices[j]].AddControlPointIndex(i, weights[j])
